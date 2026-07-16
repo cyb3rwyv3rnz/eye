@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="ckb" dir="rtl"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی چاوی دەوڵەت — دەروازەی چوونەژوورەوە</title>
+    <link rel="icon" type="image/png" href="images/newlogo.png">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="rtl">
+    <div class="ambient-glow"></div>
+    <div class="noise-overlay"></div>
+
+    <div class="auth-shell">
+        <!-- ── پانێڵی ناسنامە ─────────────────────────────────────── -->
+        <aside class="auth-brand">
+            <div class="auth-brand-top">
+                <img src="images/newlogo.png" alt="لۆگۆ" class="auth-brand-logo">
+                <div class="auth-brand-name">سیستەمی چاوی دەوڵەت<span>THE STATE’S EYE</span></div>
+            </div>
+
+            <div class="auth-brand-mid">
+                <h1>پلاتفۆرمی نهێنی بۆ<br><span class="accent-text">هەواڵگری سەهەند</span></h1>
+                <p>هەواڵگری، چاودێری هەڕەشە و ئامرازی لێکۆڵینەوە بە ئاستی ناوەندی فەرماندەیی | تەنها بۆ بەکارهێنەرانی مۆڵەتدراو.</p>
+
+                <ul class="auth-feature-list">
+                    <li class="auth-feature-item">
+                        <span class="auth-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"></rect></svg></span>
+                        ٢١ مۆدیوولی هەواڵگری، لە یەک ناوەندی کار
+                    </li>
+                    <li class="auth-feature-item">
+                        <span class="auth-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3L12 4z"></path><path d="M12 10.5v3.5"></path><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"></circle></svg></span>
+                        چاودێری ڕاستەوخۆی هەڕەشە و ئاشکراکردن
+                    </li>
+                    <li class="auth-feature-item">
+                        <span class="auth-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7.5a4 4 0 018 0V11"></path></svg></span>
+                        دەستپێگەیشتنی شفرەکراو بە AES-256
+                    </li>
+                    <li class="auth-feature-item">
+                        <span class="auth-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></span>
+                        گەڕانی خێرا و ڕاستەوخۆ
+                    </li>
+                </ul>
+            </div>
+
+            <div class="auth-brand-bottom">
+                <div class="auth-status-pill"><span class="status-indicator"></span> سیستەم چالاکە</div>
+                <div class="auth-brand-credit">دروستکراوە لەلایەن <a href="https://t.me/Prv5H" target="_blank" rel="noopener">@Prv5H</a></div>
+            </div>
+        </aside>
+
+        <!-- ── پانێڵی چوونەژوورەوە ────────────────────────────────── -->
+        <main class="auth-panel">
+            <div class="auth-card">
+                <div class="auth-card-head">
+                    <h2 id="authHeadTitle">بەخێربێیتەوە</h2>
+                    <p id="authHeadSub">بچۆ ژوورەوە بە ناسنامەی ئەجێنتەکەت بۆ بەردەوامبوون</p>
+                </div>
+
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab active" data-tab="login">چوونەژوورەوە</button>
+                    <button type="button" class="auth-tab" data-tab="register">داوای دەستپێگەیشتن</button>
+                </div>
+
+                <div id="alertContainer"></div>
+
+                <!-- فۆرمی چوونەژوورەوە -->
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label>ناسنامەی ئەجێنت</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+                            <input type="text" id="loginUsername" placeholder="ناسنامەی ئەجێنتەکەت بنووسە" required="" autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>وشەی نهێنی</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7.5a4 4 0 018 0V11"></path></svg>
+                            <input type="password" id="loginPassword" placeholder="وشەی نهێنیت بنووسە" required="" autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit">چوونەژوورەوە</button>
+                </form>
+
+                <!-- فۆرمی داواکاری هەژمار -->
+                <form id="registerForm" class="auth-form hidden">
+                    <div class="form-group">
+                        <label>ناسنامەی ئەجێنت</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+                            <input type="text" id="registerUsername" placeholder="ناسنامەیەک هەڵبژێرە" required="" autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ئیمەیل (ئیختیاری)</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M4 7l8 6 8-6"></path></svg>
+                            <input type="email" id="registerEmail" placeholder="secure.email@bcia.gov" autocomplete="email" style="direction:ltr; text-align:right;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>وشەی نهێنی</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7.5a4 4 0 018 0V11"></path></svg>
+                            <input type="password" id="registerPassword" placeholder="وشەی نهێنییەک دروست بکە" required="" autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>دڵنیاکردنەوەی وشەی نهێنی</label>
+                        <div class="input-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7.5a4 4 0 018 0V11"></path></svg>
+                            <input type="password" id="registerConfirmPassword" placeholder="وشەی نهێنی دووبارە بنووسەوە" required="" autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit">ناردنی داواکاری</button>
+
+                    <div class="auth-notice">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3L12 4z"></path><path d="M12 10.5v3.5"></path><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"></circle></svg>
+                        <span>هەژمارەکان پێویستیان بە پەسەندکردنی بەڕێوەبەری سیستەم هەیە، پێش ئەوەی دەستپێگەیشتن بدرێت.</span>
+                    </div>
+                </form>
+
+                <div class="auth-card-foot">
+                    سیستەمی نهێنی · شفرەکراو بە AES-256 · دەستپێگەیشتنی نایاسایی قەدەغەیە<br>
+                    <a href="/skala.html" class="complaint-link">سکالا - ڕاپۆرتکردن</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/face-api.min.js"></script>
+    <script src="js/auth.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c167a74a426626',t:'MTc4NDIwOTA4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body></html>

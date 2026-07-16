@@ -1,0 +1,766 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BCIA — Intelligence Operations Platform</title>
+  <link rel="icon" type="image/png" href="images/newlogo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="ambient-glow"></div>
+<div class="noise-overlay"></div>
+
+<!-- Background Music -->
+<audio id="backgroundMusic" loop=""><source src="media/backgroundmusic.mp3" type="audio/mpeg"></audio>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- ═══ TOAST STACK ════════════════════════════════════════════ -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ═══ NOTIFICATIONS PANEL ═══════════════════════════════════ -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-head">
+    <span>NOTIFICATIONS</span>
+    <span class="notif-clear" onclick="clearNotifs()">CLEAR ALL</span>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="empty-state">
+      <div class="empty-icon" data-icon="bell"></div>
+      <div class="empty-title">No notifications</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMMAND PALETTE ════════════════════════════════════════ -->
+<div class="cmd-overlay" id="cmdOverlay">
+  <div class="cmd-palette">
+    <div class="cmd-input-wrap">
+      <span class="cmd-icon" data-icon="search"></span>
+      <input class="cmd-input" id="cmdInput" placeholder="Search users, actions, pages…" autocomplete="off">
+      <span class="cmd-esc" onclick="closeCmd()">ESC</span>
+    </div>
+    <div class="cmd-results" id="cmdResults">
+      <div class="cmd-section-label">NAVIGATION</div>
+      <div class="cmd-item" data-action="nav:overview">    <span class="cmd-item-icon" data-icon="grid"></span> Overview Dashboard      <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:users">       <span class="cmd-item-icon" data-icon="user"></span> Agent Management         <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:live">        <span class="cmd-item-icon" data-icon="broadcast"></span> Live Intelligence Feed   <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:threat">      <span class="cmd-item-icon" data-icon="alertTriangle"></span> Threat Monitor            <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:audit">       <span class="cmd-item-icon" data-icon="clipboardList"></span> Audit Log                <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:analytics">   <span class="cmd-item-icon" data-icon="barChart"></span> Analytics Center         <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="nav:system">      <span class="cmd-item-icon" data-icon="server"></span> System Health            <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-section-label">ACTIONS</div>
+      <div class="cmd-item" data-action="act:refresh">     <span class="cmd-item-icon" data-icon="refresh"></span> Refresh all data          <span class="cmd-item-tag">⌘R</span></div>
+      <div class="cmd-item" data-action="act:export">      <span class="cmd-item-icon" data-icon="download"></span> Export users CSV          <span class="cmd-item-tag">Action</span></div>
+      <div class="cmd-item" data-action="act:dashboard">   <span class="cmd-item-icon" data-icon="arrowRightCircle"></span> Go to Database Access     <span class="cmd-item-tag">Page</span></div>
+      <div class="cmd-item" data-action="act:logout">      <span class="cmd-item-icon" data-icon="power"></span> Disconnect session        <span class="cmd-item-tag">Action</span></div>
+    </div>
+    <div class="cmd-footer">
+      <span class="cmd-hint"><kbd>↑↓</kbd> Navigate</span>
+      <span class="cmd-hint"><kbd>↵</kbd> Select</span>
+      <span class="cmd-hint"><kbd>ESC</kbd> Close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ USER DETAIL MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal-panel" id="userModalPanel">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="user"></span> AGENT PROFILE</span>
+      <button class="modal-close" onclick="closeUserModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Dynamically filled -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SET EXPIRY MODAL ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="expiryModal">
+  <div class="modal-panel" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="hourglass"></span> SET ACCOUNT EXPIRY</span>
+      <button class="modal-close" onclick="document.getElementById('expiryModal').classList.remove('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--text-2);margin-bottom:16px;">Set access duration for: <strong id="expiryTargetName" style="color:var(--green);font-family:var(--font-mono);"></strong></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:0.65rem;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:6px;font-family:var(--font-mono);">DURATION</label>
+          <input type="number" id="expiryDuration" min="1" max="999" value="30" class="filter-input" style="width:100%;" placeholder="e.g. 30">
+        </div>
+        <div>
+          <label style="font-size:0.65rem;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:6px;font-family:var(--font-mono);">UNIT</label>
+          <select id="expiryUnit" class="filter-select" style="width:100%;">
+            <option value="hours">Hours</option>
+            <option value="days" selected="">Days</option>
+            <option value="weeks">Weeks</option>
+            <option value="months">Months</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(1,'hours')">1 Hour</button>
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(1,'days')">1 Day</button>
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(7,'days')">7 Days</button>
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(1,'months')">1 Month</button>
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(3,'months')">3 Months</button>
+        <button class="btn btn-warning btn-sm" onclick="expiryQuick(1,'years')">1 Year</button>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="document.getElementById('expiryModal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitExpiry()"><span data-icon="hourglass"></span> Set Expiry</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUSPEND MODAL ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="suspendModal">
+  <div class="modal-panel" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="ban"></span> SUSPEND AGENT</span>
+      <button class="modal-close" onclick="document.getElementById('suspendModal').classList.remove('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--text-2);margin-bottom:16px;">Suspending: <strong id="suspendTargetName" style="color:var(--red);font-family:var(--font-mono);"></strong></p>
+      <div>
+        <label style="font-size:0.65rem;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:6px;font-family:var(--font-mono);">SUSPENSION REASON (required)</label>
+        <textarea id="suspendReason" rows="3" class="filter-input" style="width:100%;resize:vertical;" placeholder="Enter reason for suspension…"></textarea>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="document.getElementById('suspendModal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-danger" onclick="submitSuspend()"><span data-icon="ban"></span> Confirm Suspend</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CHANGE PASSWORD MODAL ══════════════════════════════════ -->
+<div class="modal-overlay" id="pwdModal">
+  <div class="modal-panel" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="key"></span> CHANGE PASSWORD</span>
+      <button class="modal-close" onclick="document.getElementById('pwdModal').classList.remove('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--text-2);margin-bottom:16px;">Setting new password for: <strong id="pwdTargetName" style="color:var(--green);font-family:var(--font-mono);"></strong></p>
+      <div>
+        <label style="font-size:0.65rem;color:var(--text-3);text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:6px;font-family:var(--font-mono);">NEW PASSWORD</label>
+        <input type="password" id="newPwdInput" class="filter-input" style="width:100%;" placeholder="Min 12 chars, upper+lower+num+symbol">
+        <p style="font-size:0.65rem;color:var(--text-3);margin-top:6px;font-family:var(--font-mono);">Min 12 chars · Uppercase · Lowercase · Number · Symbol</p>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="document.getElementById('pwdModal').classList.remove('active')">Cancel</button>
+        <button class="btn btn-info" onclick="submitPwdChange()"><span data-icon="key"></span> Change Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════════════════════════════════ -->
+<div class="ops-layout">
+
+  <!-- ── TOP HEADER ─────────────────────────────────────────── -->
+  <header class="ops-header">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()"><span data-icon="menu"></span></button>
+    <a class="logo-mark" href="#">
+      <div class="logo-hex" data-icon="logo"></div>
+      <div>
+        <div class="logo-text">BCIA</div>
+        <div class="logo-sub">INTELLIGENCE OPS · ADMIN</div>
+      </div>
+    </a>
+
+    <div class="header-search">
+      <span class="header-search-icon" data-icon="search"></span>
+      <input type="text" id="globalSearch" placeholder="Search agents, IPs, emails…" autocomplete="off">
+      <span class="search-shortcut">⌘K</span>
+      <div class="search-dropdown" id="searchDropdown"></div>
+    </div>
+
+    <div class="header-actions">
+      <button class="header-icon-btn" id="refreshBtn" data-tip="Refresh Data" onclick="refreshAll()"><span data-icon="refresh"></span></button>
+      <button class="header-icon-btn" id="notifBtn" data-tip="Notifications" onclick="toggleNotif()">
+        <span data-icon="bell"></span><span class="notif-dot" id="notifDot"></span>
+      </button>
+      <button class="header-icon-btn" data-tip="Command Palette (⌘K)" onclick="openCmd()">⌘</button>
+      <button class="header-icon-btn btn-danger" data-tip="Go to Database" onclick="window.location.href='/dashboard.html'" style="border-color:rgba(86,194,214,0.3);color:var(--blue);"><span data-icon="arrowRightCircle"></span></button>
+      <div class="header-user" onclick="logout()">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div>
+          <div class="header-username" id="headerUsername">ADMIN</div>
+          <div class="header-role">ADMINISTRATOR</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+  <aside class="ops-sidebar" id="opsSidebar">
+    <span class="nav-section-label">COMMAND CENTER</span>
+    <div class="nav-item active" data-page="overview" onclick="navTo('overview')">
+      <span class="nav-icon" data-icon="grid"></span> Overview
+    </div>
+    <div class="nav-item" data-page="live" onclick="navTo('live')">
+      <span class="nav-icon" data-icon="broadcast"></span> Live Feed
+      <span class="nav-badge" id="liveBadge">LIVE</span>
+    </div>
+    <div class="nav-item" data-page="threat" onclick="navTo('threat')">
+      <span class="nav-icon" data-icon="alertTriangle"></span> Threat Monitor
+      <span class="nav-badge" id="threatBadge">0</span>
+    </div>
+
+    <div class="nav-divider"></div>
+    <span class="nav-section-label">AGENT MANAGEMENT</span>
+    <div class="nav-item" data-page="users" onclick="navTo('users')">
+      <span class="nav-icon" data-icon="user"></span> All Agents
+      <span class="nav-badge green" id="navTotalBadge">…</span>
+    </div>
+    <div class="nav-item" data-page="users-pending" onclick="navTo('users-pending')">
+      <span class="nav-icon" data-icon="clock"></span> Pending
+      <span class="nav-badge amber" id="navPendingBadge">…</span>
+    </div>
+    <div class="nav-item" data-page="users-suspended" onclick="navTo('users-suspended')">
+      <span class="nav-icon" data-icon="ban"></span> Suspended
+    </div>
+    <div class="nav-item" data-page="users-expired" onclick="navTo('users-expired')">
+      <span class="nav-icon" data-icon="archive"></span> Expired
+    </div>
+
+    <div class="nav-divider"></div>
+<span class="nav-section-label">COMPLAINTS</span>
+<div class="nav-item" data-page="complaints" onclick="navTo('complaints')">
+  <span class="nav-icon" data-icon="messageAlert"></span> سکالا / Complaints
+  <span class="nav-badge amber" id="complaintBadge">0</span>
+</div>
+
+    <div class="nav-divider"></div>
+    <span class="nav-section-label">INTELLIGENCE</span>
+    <div class="nav-item" data-page="audit" onclick="navTo('audit')">
+      <span class="nav-icon" data-icon="clipboardList"></span> Audit Log
+    </div>
+    <div class="nav-item" data-page="analytics" onclick="navTo('analytics')">
+      <span class="nav-icon" data-icon="barChart"></span> Analytics
+    </div>
+
+    <div class="nav-divider"></div>
+    <span class="nav-section-label">SYSTEM</span>
+    <div class="nav-item" data-page="system" onclick="navTo('system')">
+      <span class="nav-icon" data-icon="server"></span> System Health
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="window.location.href='/dashboard.html'">
+        <span class="nav-icon" data-icon="arrowRightCircle"></span> Database Access
+      </div>
+      <div class="nav-item" onclick="logout()" style="color:var(--red);">
+        <span class="nav-icon" data-icon="power"></span> Disconnect
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ────────────────────────────────────────────────── -->
+  <main class="ops-main" id="opsMain">
+
+    <!-- ████ PAGE: OVERVIEW ████████████████████████████████████ -->
+    <section class="ops-page active" id="page-overview">
+      <div class="page-header">
+        <div>
+          <div class="page-title">OVERVIEW DASHBOARD</div>
+          <div class="page-subtitle">INTELLIGENCE OPERATIONS CENTER · <span id="overviewTime">—</span></div>
+        </div>
+        <div class="page-actions">
+          <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
+          <button class="btn btn-primary btn-sm" onclick="refreshAll()"><span data-icon="refresh"></span> Refresh</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportUsersCSV()"><span data-icon="download"></span> Export</button>
+        </div>
+      </div>
+
+      <div class="page-content">
+
+        <!-- KPI Row -->
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+        </div>
+
+        <!-- Live + Threat row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;" id="liveThreatRow">
+          <!-- Live Activity -->
+          <div class="glass-card" style="min-width:0;">
+            <div class="card-head">
+              <span class="card-head-title"><span class="dot"></span>LIVE ACTIVITY</span>
+              <div class="live-indicator"><div class="live-dot"></div>STREAMING</div>
+            </div>
+            <div class="live-feed" id="liveFeedSmall">
+              <div class="empty-state" style="padding:30px 20px;">
+                <div class="empty-icon" data-icon="broadcast"></div>
+                <div class="empty-title">Awaiting activity…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Threat Summary -->
+          <div class="glass-card" style="min-width:0;">
+            <div class="card-head">
+              <span class="card-head-title"><span data-icon="alertTriangle"></span> THREAT INTEL</span>
+              <button class="btn btn-ghost btn-sm" onclick="navTo('threat')">View All</button>
+            </div>
+            <div class="card-body" id="threatSummaryCard">
+              <div class="empty-state" style="padding:20px;">
+                <div class="empty-icon" data-icon="check"></div>
+                <div class="empty-title">No active threats</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Health Strip -->
+        <div class="glass-card">
+          <div class="card-head">
+            <span class="card-head-title"><span data-icon="server"></span> SYSTEM STATUS</span>
+            <button class="btn btn-ghost btn-sm" onclick="navTo('system')">Details</button>
+          </div>
+          <div class="card-body">
+            <div class="status-grid" id="systemStatusStrip">
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">System</div><div class="status-item-value">OPERATIONAL</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Database</div><div class="status-item-value" id="sysDbStatus">CONNECTED</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Encryption</div><div class="status-item-value">AES-256</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Active Sessions</div><div class="status-item-value" id="sysActiveSessions">—</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">API Gateway</div><div class="status-item-value">ONLINE</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Uptime</div><div class="status-item-value" id="sysUptime">—</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Chart -->
+        <div class="glass-card">
+          <div class="card-head">
+            <span class="card-head-title"><span data-icon="barChart"></span> ACTIVITY ANALYTICS (7 DAYS)</span>
+            <button class="btn btn-ghost btn-sm" onclick="navTo('analytics')">Full Analytics</button>
+          </div>
+          <div class="chart-wrap">
+            <div class="chart-bars" id="overviewChart"></div>
+            <div class="chart-labels" id="overviewChartLabels"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ████ PAGE: USERS (ALL / PENDING / SUSPENDED / EXPIRED) ██ -->
+    <section class="ops-page" id="page-users">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="usersPageTitle">AGENT MANAGEMENT</div>
+          <div class="page-subtitle" id="usersPageSub">FULL REGISTRY · SURVEILLANCE · ACCESS CONTROL</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary btn-sm" onclick="refreshAll()"><span data-icon="refresh"></span> Sync</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportUsersCSV()"><span data-icon="download"></span> CSV</button>
+        </div>
+      </div>
+
+      <div class="page-content" style="gap:0;padding:0;">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-tabs" id="userFilterTabs">
+            <button class="filter-tab active" data-filter="all" onclick="setUserFilter('all')">      All         <span class="tab-count" id="cnt-all">0</span></button>
+            <button class="filter-tab" data-filter="active" onclick="setUserFilter('active')">   Active      <span class="tab-count" id="cnt-active">0</span></button>
+            <button class="filter-tab" data-filter="pending" onclick="setUserFilter('pending')">  Pending     <span class="tab-count" id="cnt-pending">0</span></button>
+            <button class="filter-tab" data-filter="suspended" onclick="setUserFilter('suspended')">Suspended   <span class="tab-count" id="cnt-suspended">0</span></button>
+            <button class="filter-tab" data-filter="expired" onclick="setUserFilter('expired')">  Expired     <span class="tab-count" id="cnt-expired">0</span></button>
+            <button class="filter-tab" data-filter="locked" onclick="setUserFilter('locked')">   Locked      <span class="tab-count" id="cnt-locked">0</span></button>
+          </div>
+          <div class="filter-search-wrap">
+            <input class="filter-input" id="userSearchInput" type="text" placeholder="Search name, email, IP…" oninput="filterUsers()">
+            <select class="filter-select" id="userSortSelect" onchange="sortUsers()">
+              <option value="created-desc">Newest First</option>
+              <option value="created-asc">Oldest First</option>
+              <option value="last-login">Last Login</option>
+              <option value="username">Username A-Z</option>
+              <option value="expires">Expiry Date</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="selectAllVisible()" style="white-space:nowrap;">Select All</button>
+          </div>
+        </div>
+
+        <!-- Bulk Actions Bar (hidden by default) -->
+        <div id="bulkBar" style="display:none;padding:10px 20px;background:var(--green-dark);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--green);" id="bulkCount">0 selected</span>
+          <button class="btn btn-primary btn-sm" onclick="bulkApprove()"><span data-icon="check"></span> Approve Selected</button>
+          <button class="btn btn-danger btn-sm" onclick="bulkDelete()">× Delete Selected</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearSelection()">Cancel</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
+          <table class="ops-table" id="usersTable">
+            <thead>
+              <tr>
+                <th style="width:36px;"><input type="checkbox" id="selectAllCb" onchange="toggleSelectAll(this)" style="accent-color:var(--green);cursor:pointer;"></th>
+                <th data-col="id" onclick="clickSort('id')">ID</th>
+                <th data-col="username" onclick="clickSort('username')">AGENT</th>
+                <th data-col="last_ip" onclick="clickSort('last_ip')">LAST IP</th>
+                <th data-col="status" onclick="clickSort('status')">STATUS</th>
+                <th data-col="expiry" onclick="clickSort('expiry')">ACTIVATION / EXPIRY</th>
+                <th data-col="created_at" onclick="clickSort('created_at')">REGISTERED</th>
+                <th data-col="last_login" onclick="clickSort('last_login')">LAST LOGIN</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="9"><div class="skeleton skel-row"></div></td></tr>
+              <tr><td colspan="9"><div class="skeleton skel-row"></div></td></tr>
+              <tr><td colspan="9"><div class="skeleton skel-row"></div></td></tr>
+              <tr><td colspan="9"><div class="skeleton skel-row"></div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="userPagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alias pages route to users with filter -->
+    <section class="ops-page" id="page-users-pending">   </section>
+    <section class="ops-page" id="page-users-suspended"> </section>
+    <section class="ops-page" id="page-users-expired">   </section>
+
+    <!-- ████ PAGE: LIVE FEED ████████████████████████████████████ -->
+    <section class="ops-page" id="page-live">
+      <div class="page-header">
+        <div>
+          <div class="page-title">LIVE INTELLIGENCE FEED</div>
+          <div class="page-subtitle">REAL-TIME MONITORING · AUTO-REFRESH EVERY 8s</div>
+        </div>
+        <div class="page-actions">
+          <div class="live-indicator"><div class="live-dot"></div>STREAMING</div>
+          <button class="btn btn-ghost btn-sm" id="pauseLiveBtn" onclick="toggleLivePause()"><span data-icon="pause"></span> Pause</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLiveFeed()"><span data-icon="trash"></span> Clear</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="glass-card" style="overflow:hidden;">
+          <div class="card-head">
+            <span class="card-head-title"><span class="dot"></span>ACTIVITY STREAM</span>
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-3);" id="liveCount">0 events</span>
+          </div>
+          <div class="live-feed" id="liveFeedMain" style="max-height:calc(100vh - 240px);">
+            <div class="empty-state">
+              <div class="empty-icon" data-icon="broadcast"></div>
+              <div class="empty-title">Awaiting activity…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ████ PAGE: THREAT MONITOR ████████████████████████████████ -->
+    <section class="ops-page" id="page-threat">
+      <div class="page-header">
+        <div>
+          <div class="page-title">THREAT MONITOR</div>
+          <div class="page-subtitle">SUSPICIOUS ACTIVITY · RISK ASSESSMENT · INTRUSION DETECTION</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary btn-sm" onclick="refreshThreats()"><span data-icon="refresh"></span> Scan</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));">
+          <div class="kpi-card red">
+            <div class="kpi-top"><div class="kpi-icon red" data-icon="alertOctagon"></div></div>
+            <div class="kpi-value red" id="threatCritical">0</div>
+            <div class="kpi-label">CRITICAL</div>
+          </div>
+          <div class="kpi-card amber">
+            <div class="kpi-top"><div class="kpi-icon amber" data-icon="alertTriangle"></div></div>
+            <div class="kpi-value amber" id="threatHigh">0</div>
+            <div class="kpi-label">HIGH</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-top"><div class="kpi-icon blue" data-icon="circleDot"></div></div>
+            <div class="kpi-value blue" id="threatMedium">0</div>
+            <div class="kpi-label">MEDIUM</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-icon green" data-icon="check"></div></div>
+            <div class="kpi-value" id="threatLow">0</div>
+            <div class="kpi-label">LOW</div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-head"><span class="card-head-title"><span data-icon="alertTriangle"></span> THREAT EVENTS</span></div>
+          <div class="card-body" id="threatList">
+            <div class="empty-state"><div class="empty-icon" data-icon="check"></div><div class="empty-title">No active threats detected</div><div class="empty-sub">All systems nominal</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ████ PAGE: COMPLAINTS (سکالا) ████████████████████████████ -->
+<section class="ops-page" id="page-complaints">
+  <div class="page-header">
+    <div>
+      <div class="page-title">سکالا / COMPLAINTS</div>
+      <div class="page-subtitle">PUBLIC COMPLAINT MANAGEMENT · USER REPORT INBOX</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary btn-sm" onclick="loadComplaints()"><span data-icon="refresh"></span> Refresh</button>
+    </div>
+  </div>
+  <div class="page-content" style="gap:0;padding:0;">
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" onclick="setComplaintFilter('all')">All <span class="tab-count" id="complaint-cnt-all">0</span></button>
+        <button class="filter-tab" data-filter="pending" onclick="setComplaintFilter('pending')">Pending <span class="tab-count" id="complaint-cnt-pending">0</span></button>
+        <button class="filter-tab" data-filter="read" onclick="setComplaintFilter('read')">Read <span class="tab-count" id="complaint-cnt-read">0</span></button>
+        <button class="filter-tab" data-filter="in_progress" onclick="setComplaintFilter('in_progress')">In Progress <span class="tab-count" id="complaint-cnt-in_progress">0</span></button>
+        <button class="filter-tab" data-filter="resolved" onclick="setComplaintFilter('resolved')">Resolved <span class="tab-count" id="complaint-cnt-resolved">0</span></button>
+      </div>
+    </div>
+    <div class="table-wrap glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
+      <table class="ops-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>COMPLAINANT</th>
+            <th>AGAINST</th>
+            <th>CONTACT</th>
+            <th>STATUS</th>
+            <th>SUBMITTED</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="complaintsTableBody">
+          <tr><td colspan="7"><div class="skeleton skel-row"></div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="complaintPagination"></div>
+    </div>
+  </div>
+
+  <!-- Complaint Detail Modal -->
+  <div class="modal-overlay" id="complaintDetailModal">
+    <div class="modal-panel" style="max-width:700px;">
+      <div class="modal-header">
+        <span class="modal-title">COMPLAINT DETAIL #<span id="complaintDetailId">—</span></span>
+        <button class="modal-close" onclick="document.getElementById('complaintDetailModal').classList.remove('active')">×</button>
+      </div>
+      <div class="modal-body" id="complaintDetailBody">
+        <!-- Dynamic -->
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- ████ PAGE: AUDIT LOG ██████████████████████████████████████ -->
+    <section class="ops-page" id="page-audit">
+      <div class="page-header">
+        <div>
+          <div class="page-title">AUDIT LOG SYSTEM</div>
+          <div class="page-subtitle">COMPLETE ACTIVITY TRAIL · SEARCHABLE · FILTERABLE</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-ghost btn-sm" onclick="exportAuditCSV()"><span data-icon="download"></span> Export CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="loadAuditLog()"><span data-icon="refresh"></span> Refresh</button>
+        </div>
+      </div>
+      <div class="page-content" style="gap:0;padding:0;">
+        <div class="filter-bar">
+          <input class="filter-input" id="auditSearch" type="text" placeholder="Search user, action, IP…" oninput="filterAudit()">
+          <select class="filter-select" id="auditTypeFilter" onchange="filterAudit()">
+            <option value="">All Actions</option>
+            <option value="LOGIN">Login</option>
+            <option value="SEARCH">Search</option>
+            <option value="APPROVE">Approve</option>
+            <option value="DELETE">Delete</option>
+            <option value="SUSPEND">Suspend</option>
+            <option value="EXPIRE">Expire</option>
+            <option value="PASSWORD">Password</option>
+            <option value="FAILED">Failed Login</option>
+          </select>
+          <select class="filter-select" id="auditDateFilter" onchange="filterAudit()">
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="7days">Last 7 Days</option>
+            <option value="30days">Last 30 Days</option>
+          </select>
+        </div>
+        <div class="table-wrap glass-card" style="border-radius:0;border-left:none;border-right:none;border-top:none;">
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>TIMESTAMP</th>
+                <th>AGENT</th>
+                <th>ACTION</th>
+                <th>DETAILS</th>
+                <th>IP ADDRESS</th>
+                <th>BROWSER</th>
+                <th>DEVICE</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr><td colspan="7"><div class="skeleton skel-row"></div></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination" id="auditPagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ████ PAGE: ANALYTICS ██████████████████████████████████████ -->
+    <section class="ops-page" id="page-analytics">
+      <div class="page-header">
+        <div>
+          <div class="page-title">ANALYTICS CENTER</div>
+          <div class="page-subtitle">USER GROWTH · ACTIVITY VOLUME · SEARCH PATTERNS</div>
+        </div>
+        <div class="page-actions">
+          <select class="filter-select" id="analyticsRange" onchange="renderAnalytics()">
+            <option value="7">7 Days</option>
+            <option value="14">14 Days</option>
+            <option value="30" selected="">30 Days</option>
+          </select>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="kpi-grid" id="analyticsKPIs">
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+          <div class="skeleton skel-kpi"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;" id="analyticsCharts">
+          <div class="glass-card">
+            <div class="card-head"><span class="card-head-title"><span data-icon="trendingUp"></span> ACTIVITY VOLUME</span></div>
+            <div class="chart-wrap">
+              <div class="chart-bars" id="analyticsBarChart" style="height:160px;"></div>
+              <div class="chart-labels" id="analyticsBarLabels"></div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div class="card-head"><span class="card-head-title"><span data-icon="target"></span> ACTION BREAKDOWN</span></div>
+            <div class="card-body" id="actionBreakdown" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-head"><span class="card-head-title"><span data-icon="clipboardList"></span> TOP ACTIVE AGENTS</span></div>
+          <div class="table-wrap">
+            <table class="ops-table">
+              <thead><tr><th>AGENT</th><th>SEARCHES</th><th>LOGINS</th><th>TOTAL ACTIONS</th><th>STATUS</th></tr></thead>
+              <tbody id="analyticsTopAgents">
+                <tr><td colspan="5"><div class="skeleton skel-row"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ████ PAGE: SYSTEM HEALTH ██████████████████████████████████ -->
+    <section class="ops-page" id="page-system">
+      <div class="page-header">
+        <div>
+          <div class="page-title">SYSTEM HEALTH CENTER</div>
+          <div class="page-subtitle">INFRASTRUCTURE STATUS · REAL-TIME MONITORING</div>
+        </div>
+        <div class="page-actions">
+          <div class="live-indicator"><div class="live-dot"></div>MONITORING</div>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="kpi-grid">
+          <div class="kpi-card blue">
+            <div class="kpi-top"><div class="kpi-icon blue" data-icon="globe"></div></div>
+            <div class="kpi-value blue" id="sysSessionCount">—</div>
+            <div class="kpi-label">Active Sessions</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-icon green" data-icon="user"></div></div>
+            <div class="kpi-value green" id="sysApprovedCount">—</div>
+            <div class="kpi-label">Approved Agents</div>
+          </div>
+          <div class="kpi-card amber">
+            <div class="kpi-top"><div class="kpi-icon amber" data-icon="lock"></div></div>
+            <div class="kpi-value amber" id="sysLockedCount">—</div>
+            <div class="kpi-label">Locked Accounts</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-top"><div class="kpi-icon red" data-icon="ban"></div></div>
+            <div class="kpi-value red" id="sysSuspendedCount">—</div>
+            <div class="kpi-label">Suspended</div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-head"><span class="card-head-title"><span data-icon="server"></span> SUBSYSTEM STATUS</span></div>
+          <div class="card-body">
+            <div class="status-grid">
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Core Server</div><div class="status-item-value">ONLINE</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Users Database</div><div class="status-item-value" id="sys-usersdb">CONNECTED</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Intel Databases</div><div class="status-item-value" id="sys-inteldbs">CONNECTED</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Telegram Link</div><div class="status-item-value">ACTIVE</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Encryption</div><div class="status-item-value">AES-256</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">JWT Auth</div><div class="status-item-value">ACTIVE (4h TTL)</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">Rate Limiting</div><div class="status-item-value">ENABLED</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">CSP Headers</div><div class="status-item-value">ENFORCED</div></div></div>
+              <div class="status-item"><div class="status-circle online"></div><div><div class="status-item-label">System Uptime</div><div class="status-item-value" id="sys-uptime2">—</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div><!-- /ops-layout -->
+
+<script>
+  /* Background music */
+  const bgm = document.getElementById('backgroundMusic');
+  bgm.volume = 0.25;
+  bgm.play().catch(()=>{});
+</script>
+<!-- Activity Log Modal -->
+<div class="modal-overlay" id="activityModal">
+  <div class="modal-panel" style="max-width:960px;">
+    <div class="modal-header">
+      <span class="modal-title"><span data-icon="clipboardList"></span> ACTIVITY LOG — <span id="activityUsername"></span></span>
+      <button class="modal-close" onclick="closeActivityModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div class="table-wrap" style="max-height:70vh;overflow-y:auto;">
+        <table class="ops-table">
+          <thead>
+            <tr>
+              <th>TIMESTAMP</th>
+              <th>ACTION</th>
+              <th>DETAILS</th>
+              <th>IP ADDRESS</th>
+              <th>BROWSER</th>
+              <th>DEVICE</th>
+            </tr>
+          </thead>
+          <tbody id="activityTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/admin.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c1759688649fa5',t:'MTc4NDIwOTY1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+</body></html>

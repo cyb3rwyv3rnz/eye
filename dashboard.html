@@ -1,0 +1,1074 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0B0B0D">
+    <title>BCIA - CLASSIFIED INTELLIGENCE SYSTEM</title>
+    <link rel="icon" type="image/png" href="images/newlogo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+</head>
+<body>
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop="">
+        <source src="media/backgroundmusic.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="ambient-glow"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Command Palette -->
+    <div class="cmdk-overlay" id="cmdkOverlay">
+        <div class="cmdk-panel">
+            <div class="cmdk-input-row">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+                <input type="text" id="cmdkInput" placeholder="Search modules, actions…" autocomplete="off">
+                <kbd style="font-family: var(--font-mono); font-size: 10px; color: var(--gray-3); border: 1px solid var(--border-default); border-radius: 4px; padding: 2px 6px;">ESC</kbd>
+            </div>
+            <div class="cmdk-list" id="cmdkList"></div>
+            <div class="cmdk-footer">
+                <span><kbd>↑↓</kbd>Navigate</span>
+                <span><kbd>↵</kbd>Select</span>
+                <span><kbd>ESC</kbd>Close</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <aside class="sidebar" id="appSidebar">
+            <div class="sidebar-brand">
+                <img src="images/newlogo.png" alt="Logo" class="sidebar-logo">
+                <div>
+                    <div class="sidebar-brand-name terminal-text" data-translate="titleofsys">BCIA AGENCY</div>
+                    <div class="sidebar-brand-sub">INTEL PLATFORM</div>
+                </div>
+            </div>
+
+            <button class="cmdk-trigger" id="cmdkTrigger" type="button">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+                <span class="label" data-translate="cmdkTrigger">Search modules…</span>
+                <kbd>⌘K</kbd>
+            </button>
+
+            <div class="sidebar-section-label" data-translate="navOverview">OVERVIEW</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item" id="navHome">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+                    <span data-translate="homeNav">Command Center</span>
+                </a>
+                <a href="#" class="sidebar-nav-item active" id="navDatabases">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"></rect></svg>
+                    <span data-translate="databasesNav">Intelligence Modules</span>
+                </a>
+                <a href="#" class="sidebar-nav-item" id="adminBtn" style="display: none;">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3.2v5.6c0 4.9-3.2 8.3-7.5 9.9-4.3-1.6-7.5-5-7.5-9.9V6.2L12 3z"></path></svg>
+                    <span data-translate="adminAccess">Ops Center</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="theme-switcher">
+                    <button class="btn btn-small" onclick="changeTheme('cyan')" title="Cyan">1</button>
+                    <button class="btn btn-small" onclick="changeTheme('graphite')" title="Graphite">2</button>
+                    <button class="btn btn-small" onclick="changeTheme('azure')" title="Azure">3</button>
+                    <button class="btn btn-small" onclick="changeTheme('crimson')" title="Crimson">4</button>
+                    <button class="btn btn-small" onclick="changeTheme('violet')" title="Violet">5</button>
+                    <button class="btn btn-small" onclick="changeTheme('amber')" title="Amber">6</button>
+                    <button class="btn btn-small" onclick="changeTheme('emerald')" title="Emerald">7</button>
+                </div>
+                <div class="sidebar-footer-actions">
+                    <button class="btn btn-small" id="languageToggleBtn" title="Language">
+                        <span id="languageLabel">EN</span>
+                    </button>
+                    <button class="btn btn-small" id="muteBtn" onclick="toggleMute()" title="Mute / Unmute Music">
+                        <span id="muteIcon">🔊</span>
+                    </button>
+                    <button class="btn btn-small" onclick="showProfileModal()" title="Profile">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
+                    </button>
+                    <button class="btn btn-small btn-danger" id="logoutBtn" title="Disconnect">
+                        <span data-translate="disconnect">EXIT</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-col">
+            <header class="topbar">
+                <div class="breadcrumb">
+                    <span class="crumb-root" data-translate="crumbRoot">BCIA</span>
+                    <span class="crumb-sep">/</span>
+                    <span class="crumb-current" id="breadcrumbCurrent" data-translate="homeNav">Command Center</span>
+                </div>
+                <div class="topbar-status">
+                    <span class="status-pill">
+                        <span class="status-indicator"></span>
+                        <span data-translate="systemActive">SYSTEM ACTIVE</span>
+                    </span>
+                    <span class="status-pill" id="systemTime">7/16/2026 15:40:56</span>
+                    <span class="status-pill">
+                        <span data-translate="connection">LINK</span>: <span style="color:var(--success)" data-translate="secure">ENCRYPTED</span>
+                    </span>
+                </div>
+                <div class="topbar-user">
+                    <span class="clearance-level clearance-level-1" id="clearanceLevel">AGENT</span>
+                    <span class="username terminal-text" id="currentUsername">AGENT-001</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <section id="homeView" class="hidden">
+                    <div class="home-header">
+                        <div>
+                            <h1><span data-translate="homeWelcome">Welcome back</span>, <span id="homeUsername">Agent</span></h1>
+                            <div class="home-sub" data-translate="homeSub">Real-time overview of your intelligence workspace</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-row">
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-head">
+                                <div class="kpi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"></rect></svg></div>
+                            </div>
+                            <div class="kpi-value" id="kpiDbCount">0</div>
+                            <div class="kpi-label" data-translate="kpiDatabasesLabel">Modules Available</div>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-head">
+                                <div class="kpi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></div>
+                            </div>
+                            <div class="kpi-value" id="kpiSearches">0</div>
+                            <div class="kpi-label" data-translate="kpiSearchesLabel">Queries Executed</div>
+                            <svg class="kpi-spark" id="kpiSparkSearches" viewBox="0 0 100 32" preserveAspectRatio="none"></svg>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-head">
+                                <div class="kpi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4V3z"></path></svg></div>
+                            </div>
+                            <div class="kpi-value" id="kpiBookmarks">0</div>
+                            <div class="kpi-label" data-translate="kpiBookmarksLabel">Entities Bookmarked</div>
+                        </div>
+                        <div class="kpi-tile">
+                            <div class="kpi-tile-head">
+                                <div class="kpi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3.2v5.6c0 4.9-3.2 8.3-7.5 9.9-4.3-1.6-7.5-5-7.5-9.9V6.2L12 3z"></path></svg></div>
+                            </div>
+                            <div class="kpi-value" id="kpiClearance">AGENT</div>
+                            <div class="kpi-label" data-translate="kpiClearanceLabel">Clearance Level</div>
+                        </div>
+                    </div>
+
+                    <div class="home-grid">
+                        <div class="home-card">
+                            <div class="home-card-header">
+                                <h3 data-translate="searchActivityTitle">Query Activity</h3>
+                                <span class="home-card-sub" data-translate="searchActivitySub">LAST 7 DAYS</span>
+                            </div>
+                            <div id="homeTrendChart" class="chart-wrap"></div>
+                        </div>
+
+                        <div class="home-card">
+                            <div class="home-card-header">
+                                <h3 data-translate="recentActivityTitle">Live Activity Feed</h3>
+                            </div>
+                            <div id="homeRecentSearches" class="activity-feed"></div>
+                        </div>
+                    </div>
+                </section>
+
+    <div class="container">
+        <!-- Database Selection -->
+<div class="dashboard-grid animate-stagger" id="databaseSelection">
+<div class="module-section-label" data-translate="coreRegistriesGroup">Core Registries</div>
+<div class="card" data-db="sayara">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.5V11l2-5h12l2 5v5.5"></path><path d="M4 16.5h16"></path><circle cx="7.5" cy="17" r="1.5"></circle><circle cx="16.5" cy="17" r="1.5"></circle></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="vehicleDatabase">VEHICLE DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="vehicleDesc">
+        CLASSIFIED: Vehicle registration records, automotive intelligence data, and transportation surveillance systems.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="parwarda">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M5.5 16c0-1.9 1.6-3.2 3.5-3.2s3.5 1.3 3.5 3.2"></path><path d="M14 9.5h4M14 13.5h4"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="personnelDatabase">PERSONNEL DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="personnelDesc">
+        TOP SECRET: Personnel dossiers, employment records, and citizen intelligence data.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="city">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h1M14 8h1M9 12h1M14 12h1M9 16h2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="cityDatabase">CITY REGISTRY DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="cityDesc">
+        RESTRICTED: Family records, residential intelligence, and citizen identification data.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="iraq2022">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8l1.3 1.3L13 6.5"></path><path d="M9 15h6"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="iraq2022Database">CITY REGISTRY DATABASE 2022</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="iraq2022Desc">
+        CLASSIFIED: Complete citizen registry from 2022, family records, and national identification database.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="karaba">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke-linejoin="round"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="karabaDatabase">ELECTRICITY METER DATABASE</h2>
+            <span class="card-badge">INFRASTRUCTURE</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="karabaDesc">
+        CLASSIFIED: Electricity meter surveillance, subscriber intelligence, and power grid monitoring systems.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="ihec">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M7.5 12l3 3 6-6.5"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="ihecDatabase">ELECTORAL VOTER DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="ihecDesc">
+        TOP SECRET: Electoral voter registration, polling station data, and citizen voting intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="hezakani">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-3 5.5a3 3 0 006 0L5 7zM19 7l-3 5.5a3 3 0 006 0L19 7zM5 7h14"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="hezakaniDatabase">COURT DECISIONS DATABASE</h2>
+            <span class="card-badge">LEGAL</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="hezakaniDesc">
+        CLASSIFIED: Court decisions, wanted persons, PUK security records, and legal case intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="shealth">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 8.3c0 3.8-4.1 6.7-7.5 9.9-3.4-3.2-7.5-6.1-7.5-9.9a4.3 4.3 0 017.5-2.8 4.3 4.3 0 017.5 2.8z"></path><path d="M7.5 11h1.7l1.3-2.6 1.5 4.6 1.3-2h2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="shealthDatabase">S-HEALTH DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="shealthDesc">
+        CLASSIFIED: COVID-19 vaccination records, health surveillance data, and citizen medical intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="pension">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10.5h18"></path><circle cx="16" cy="14.5" r="1.1" fill="currentColor" stroke="none"></circle></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="pensionDatabase">PENSION DATABASE</h2>
+            <span class="card-badge">FINANCIAL</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="pensionDesc">
+        CLASSIFIED: Retirement records, pension beneficiaries, heir information, and financial intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="lawyers">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="12.5" rx="2"></rect><path d="M8.5 7.5V5.5a2 2 0 012-2h3a2 2 0 012 2v2"></path><path d="M3 12.5h18"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="lawyersDatabase">LAWYERS DATABASE</h2>
+            <span class="card-badge">LEGAL</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="lawyersDesc">
+        CLASSIFIED: Kurdistan Region Bar Association records, lawyer registrations, and legal professional intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="module-section-label" data-translate="telecomServicesGroup">Telecom & OSINT</div>
+
+<div class="card" data-db="facebook">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.6"></circle><circle cx="18" cy="6" r="2.6"></circle><circle cx="18" cy="18" r="2.6"></circle><path d="M8.3 10.6l7.4-3.2M8.3 13.4l7.4 3.2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="facebookDatabase">FACEBOOK INTELLIGENCE DATABASE</h2>
+            <span class="card-badge">OSINT</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="facebookDesc">
+        Social media intelligence, user profiles, contact information, and digital footprint tracking.
+    </p>
+    <button class="btn btn-primary w-full"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="qicard">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5.5" width="20" height="13" rx="2"></rect><path d="M2 10h20"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="qicardDatabase">SMART CARD DATABASE</h2>
+            <span class="card-badge">REGISTRY</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="qicardDesc">
+        Food ration card records, smart card data, and citizen welfare system intelligence.
+    </p>
+    <button class="btn btn-primary w-full"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="asiacell">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h.01M9 20v-4.5M14 20V11M19 20V5.5"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="asiacellDatabase">ASIACELL SUBSCRIBER DATABASE</h2>
+            <span class="card-badge">TELECOM</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="asiacellDesc">
+        Mobile network subscriber records, SIM card registrations, and telecommunications intelligence.
+    </p>
+    <button class="btn btn-primary w-full"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="truecaller">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="2" width="9" height="20" rx="2"></rect><path d="M11 18h2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="truecallerDatabase">PHONE NUMBER DATABASE</h2>
+            <span class="card-badge">TELECOM</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="truecallerDesc">
+        CLASSIFIED: Phone number identification, caller name lookup, and telecommunications intelligence.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card locked" data-db="fib">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V7.5a4 4 0 018 0V11"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="fibDatabase">FIB DATABASE</h2>
+            <span class="card-badge">LOCKED</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="fibDesc">
+        CLASSIFIED: FIB Banking database intelligence. This module is temporarily locked for maintenance.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn" disabled="" data-translate="fibLockedBtn">TEMPORARILY LOCKED</button>
+</div>
+
+<div class="module-section-label" data-translate="peopleRelationsGroup">Relationship Intelligence</div>
+
+<div class="card" data-db="relatives">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9.5" r="2.3"></circle><path d="M3.2 20c0-3.4 2.6-6 5.8-6s5.8 2.6 5.8 6M15.2 14.7c2.4.4 4.3 2.3 4.3 5.3"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="relativesDatabase">RELATIVES FINDER DATABASE</h2>
+            <span class="card-badge">ENTITY GRAPH</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="relativesDesc">
+        CLASSIFIED: Family lineage tracking, paternal and maternal relatives identification system.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="module-section-label" data-translate="intelligenceToolsGroup">Threat & Operator Tools</div>
+
+<div id="peshmergaCard" class="card" data-db="peshmerga" style="display:none;">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3.2v5.6c0 4.9-3.2 8.3-7.5 9.9-4.3-1.6-7.5-5-7.5-9.9V6.2L12 3z"></path><path d="M12 8.5v5"></path><circle cx="12" cy="16.2" r="0.6" fill="currentColor" stroke="none"></circle></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="peshmergaDatabase">PESHMERGA POWER</h2>
+            <span class="card-badge">BREACH INTEL</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="peshmergaDesc">
+        CLASSIFIED: Breach database search, stealer informations, and credential intelligence. Limited to 50 searches per 24 hours.
+    </p>
+    <button class="btn btn-primary w-full" onclick="openPeshmergaModal()"><span data-translate="peshmergaStealerinformations">ACCESS PESHMERGA POWER</span></button>
+</div>
+
+<div class="card" data-db="cve">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="8" height="10" rx="4"></rect><path d="M12 8V6M8 6l1.5 2M16 6l-1.5 2M6 12H3.5M20.5 12H18M7 18l-2 2M17 18l2 2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="cveDatabase">CVE INTELLIGENCE DATABASE</h2>
+            <span class="card-badge">VULN FEED</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="cveDesc">
+        CLASSIFIED: Latest vulnerabilities, severity tracking, CVE search, and exploit intelligence feed.
+    </p>
+    <button class="btn btn-primary w-full" onclick="openCveModal()"><span data-translate="cveAccess">ACCESS CVE DATABASE</span></button>
+</div>
+
+<div class="card" data-db="ai">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"></rect><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M4.5 19.5l2-2M17.5 6.5l2-2"></path></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="aiDatabase">Cyb3r Drag0nz AI</h2>
+            <span class="card-badge">AI ASSISTANT</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="aiDesc">
+        CLASSIFIED: Direct neural interface with Cyb3r Drag0nz intelligence system.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn" disabled=""><span data-translate="aiAccess">ACCESS AI TERMINAL</span></button>
+</div>
+
+<div class="card" data-db="shad">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3.3L9 6h6l1.7 2H20a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"></path><circle cx="12" cy="13" r="3.2"></circle></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" data-translate="shadDatabase">CAMERA HACK</h2>
+            <span class="card-badge">DECEPTION</span>
+        </div>
+    </div>
+    <p class="card-description" data-translate="shadDesc">
+        CLASSIFIED: Camera hack network servers for generating secure phishing intelligence pages.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn"><span data-translate="accessDatabase">ACCESS DATABASE</span></button>
+</div>
+
+<div class="card" data-db="karabamap">
+    <div class="card-header">
+        <span class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11.5A7 7 0 105 9.5C5 14.7 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.3"></circle></svg></span>
+        <div class="card-title-wrap">
+            <h2 class="card-title" id="karabaMapCardTitle">INFORMATIONS MAP</h2>
+            <span class="card-badge">GEO-INTEL</span>
+        </div>
+    </div>
+    <p class="card-description" id="karabaMapCardDesc">
+        CLASSIFIED: Live information locations on interactive map with cluster view.
+    </p>
+    <button class="btn btn-primary w-full db-access-btn" onclick="openKarabaMapModal()" id="karabaMapCardBtn">ACCESS MAP</button>
+</div>
+
+        </div>
+
+        <!-- Search Interface -->
+        <div class="search-container hidden" id="searchContainer">
+            <div class="search-header">
+                <h2 class="search-title terminal-text" id="searchTitle" data-translate="databaseAccess">DATABASE ACCESS</h2>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn" id="clearAllBtn">
+                        <span data-translate="clearFields">CLEAR ALL FIELDS</span>
+                    </button>
+                    <button class="btn" id="backToDbBtn">
+                        <span data-translate="terminateSession">TERMINATE SESSION</span>
+                    </button>
+                    
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-bar-fill"></div>
+            </div>
+
+            <!-- Database Specific Options -->
+            <div id="dbOptions"></div>
+
+        
+
+            <!-- All Fields Grid -->
+            <div class="all-fields-grid" id="allFieldsGrid"></div>
+
+            <!-- Search Button -->
+            <button class="btn btn-primary w-full" id="searchBtn" style="display: none;">
+                <span data-translate="executeSearch">EXECUTE SEARCH</span>
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading hidden" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p class="loading-text terminal-text" data-translate="scanningDatabases">SCANNING ENCRYPTED DATABASES...</p>
+            <div class="scanning-line"></div>
+            <p class="loading-text terminal-text" style="margin-top: 20px; font-size: 12px;" data-translate="decrypting">
+                DECRYPTING RECORDS... AUTHENTICATING... PROCESSING...
+            </p>
+        </div>
+
+        <!-- Results Container -->
+        <div class="results-container hidden animate-fade-in-up" id="resultsContainer">
+            <div class="search-header">
+                <h2 class="search-title terminal-text" data-translate="searchResults">SEARCH RESULTS: CLASSIFIED</h2>
+                <button class="btn" id="newSearchBtn">
+                    <span data-translate="newSearch">NEW SEARCH</span>
+                </button>
+            </div>
+            <div id="resultsContent"></div>
+            <div class="pagination" id="paginationContainer"></div>
+        </div>
+    </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content corner-bracket">
+            <div class="modal-header">
+                <h2 class="terminal-text" data-translate="biometricData">BIOMETRIC IMAGE DATA</h2>
+                <button class="modal-close" id="closeImageModal">×</button>
+            </div>
+            <div class="image-container" id="imageContainer"></div>
+        </div>
+    </div>
+
+    <!-- Family Modal -->
+    <div class="modal" id="familyModal">
+        <div class="modal-content corner-bracket">
+            <div class="modal-header">
+                <h2 class="terminal-text" data-translate="familyRecords">FAMILY UNIT RECORDS</h2>
+                <button class="modal-close" id="closeFamilyModal">×</button>
+            </div>
+            <div id="familyContent"></div>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div class="modal" id="locationModal">
+        <div class="modal-content corner-bracket" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2 class="terminal-text" data-translate="meterLocation">METER LOCATION</h2>
+                <button class="modal-close" id="closeLocationModal">×</button>
+            </div>
+            <div id="locationContent"></div>
+        </div>
+    </div>
+    <div class="modal" id="familyTreeModal">
+    <div class="modal-content corner-bracket" style="max-width: 95%; max-height: 95vh;">
+        <div class="modal-header">
+            <h2 class="terminal-text">FAMILY TREE VISUALIZATION</h2>
+            <button class="modal-close" id="closeFamilyTreeModal">×</button>
+        </div>
+        <div id="familyTreeContent" style="width: 100%; height: 70vh; background: var(--input-bg); border: 2px solid var(--primary-green); border-radius: 10px; overflow: hidden;"></div>
+    </div>
+</div>
+
+<!-- Bookmarks Modal -->
+<!-- Profile Modal -->
+<div class="modal" id="profileModal">
+    <div class="modal-content corner-bracket" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h2 class="terminal-text">👤 <span data-translate="userProfile">AGENT PROFILE</span></h2>
+            <button class="modal-close" id="closeProfileModal">×</button>
+        </div>
+        
+        <div style="padding: 20px;">
+            <!-- Profile Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--dark-green); padding-bottom: 10px;">
+                <button class="profile-tab" data-tab="bookmarks" style="padding: 10px 20px; background: var(--secondary-bg); border: 1px solid var(--dark-green); color: var(--text-secondary); cursor: pointer; border-radius: 6px; font-weight: bold;">
+                    ⭐ <span data-translate="bookmarks">BOOKMARKS</span>
+                </button>
+                <button class="profile-tab" data-tab="password" style="padding: 10px 20px; background: var(--secondary-bg); border: 1px solid var(--dark-green); color: var(--text-secondary); cursor: pointer; border-radius: 6px; font-weight: bold;">
+                    🔑 <span data-translate="changePassword">CHANGE PASSWORD</span>
+                </button>
+            </div>
+            
+            <!-- Tab Contents -->
+            <div id="profileTabContent"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Cyb3r Drag0nz AI Modal -->
+<div class="modal" id="aiModal" style="z-index: 2000;">
+    <div class="modal-content corner-bracket" style="max-width: 900px; width: 95%; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+        
+        <!-- Header -->
+        <div style="padding: 20px 25px; border-bottom: 2px solid var(--primary-green); display: flex; justify-content: space-between; align-items: center; background: var(--secondary-bg); flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.8rem;">▣</span>
+                <div>
+                    <div style="color: var(--primary-green); font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;">Cyb3r Drag0nz AI</div>
+                    <div id="aiModelText" style="color: var(--text-dim); font-size: 0.7rem; letter-spacing: 1px;" data-translate="aiModel">MODEL: Cyb3r-Drag0nz:latest</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div id="aiStatusDot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--text-dim); box-shadow: none; transition: all 0.3s;"></div>
+                <span id="aiStatusText" style="color: var(--text-dim); font-size: 0.75rem; letter-spacing: 1px;">OFFLINE</span>
+                <button class="modal-close" onclick="closeAiModal()">×</button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="aiMessages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: var(--primary-bg);">
+            <!-- Welcome message -->
+            <div style="text-align: center; padding: 30px 20px; color: var(--text-dim);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">▣</div>
+                <div style="color: var(--primary-green); font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">CYB3R DRAG0NZ AI ONLINE</div>
+                <div style="font-size: 0.85rem; line-height: 1.8;">Neural link established. Ask anything.<br><span style="color: var(--text-dim); font-size: 0.75rem;">Running locally via Cyb3r Drag0nz</span></div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div style="padding: 15px 20px; border-top: 2px solid var(--dark-green); background: var(--secondary-bg); flex-shrink: 0;">
+            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                <textarea id="aiInput" placeholder="Enter your query for Cyb3r Drag0nz..." rows="1" style="
+                        flex: 1;
+                        background: var(--input-bg);
+                        border: 1.5px solid var(--dark-green);
+                        color: var(--primary-green);
+                        padding: 12px 15px;
+                        font-family: 'Cairo', monospace;
+                        font-size: 0.9rem;
+                        resize: none;
+                        border-radius: 6px;
+                        outline: none;
+                        transition: border-color 0.3s;
+                        max-height: 120px;
+                        overflow-y: auto;
+                        line-height: 1.5;
+                    " onkeydown="handleAiKeydown(event)" oninput="autoResizeAiInput(this)" onfocus="this.style.borderColor='var(--primary-green)'" onblur="this.style.borderColor='var(--dark-green)'"></textarea>
+                <button id="aiSendBtn" onclick="sendAiMessage()" style="
+                        background: linear-gradient(135deg, var(--dark-green), #005528);
+                        border: 1.5px solid var(--primary-green);
+                        color: var(--primary-green);
+                        padding: 12px 20px;
+                        cursor: pointer;
+                        border-radius: 6px;
+                        font-size: 1.1rem;
+                        transition: all 0.3s;
+                        flex-shrink: 0;
+                        height: 46px;
+                    " onmouseover="this.style.boxShadow='0 0 15px var(--glow-green)'" onmouseout="this.style.boxShadow='none'">►</button>
+                <button onclick="clearAiChat()" style="
+                        background: transparent;
+                        border: 1.5px solid var(--dark-green);
+                        color: var(--text-dim);
+                        padding: 12px 15px;
+                        cursor: pointer;
+                        border-radius: 6px;
+                        font-size: 0.8rem;
+                        transition: all 0.3s;
+                        flex-shrink: 0;
+                        height: 46px;
+                        letter-spacing: 1px;
+                    " onmouseover="this.style.borderColor='var(--danger-red)'; this.style.color='var(--danger-red)'" onmouseout="this.style.borderColor='var(--dark-green)'; this.style.color='var(--text-dim)'">CLR</button>
+            </div>
+            <div id="aiShortcutText" style="margin-top: 8px; color: var(--text-dim); font-size: 0.7rem; letter-spacing: 0.5px;" data-translate="aiShortcut">
+    ENTER to send • SHIFT+ENTER for new line
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- CVE Modal -->
+<div class="modal" id="cveModal" style="z-index: 2000;">
+    <div class="modal-content corner-bracket" style="max-width: 1050px; width: 95%; height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+        
+        <div style="padding: 20px 25px; border-bottom: 2px solid var(--primary-green); display: flex; justify-content: space-between; align-items: center; background: var(--secondary-bg); flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.8rem;">▣</span>
+                <div>
+                    <div style="color: var(--primary-green); font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;" data-translate="cveDatabase">CVE INTELLIGENCE DATABASE</div>
+                    <div id="cveSourceLabel" style="color: var(--text-dim); font-size: 0.7rem; letter-spacing: 1px;" data-translate="cveSource">SOURCE: NVD / NIST — LIVE FEED</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeCveModal()">×</button>
+        </div>
+
+        <!-- Controls -->
+       <div style="padding: 15px 20px; border-bottom: 1px solid var(--dark-green); background: var(--secondary-bg); flex-shrink: 0;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <input type="text" id="cveSearchInput" style="flex: 1; min-width: 180px; padding: 10px 14px; background: var(--input-bg); border: 1.5px solid var(--dark-green); color: var(--primary-green); font-family: 'Cairo', monospace; font-size: 0.9rem; border-radius: 6px; outline: none;" onfocus="this.style.borderColor='var(--primary-green)'" onblur="this.style.borderColor='var(--dark-green)'" onkeydown="if(event.key==='Enter') searchCve()">
+        <select id="cveSeverityFilter" onchange="filterCveBySeverity()" style="padding: 10px 12px; background: var(--input-bg); border: 1.5px solid var(--dark-green); color: var(--primary-green); font-family: 'Cairo', monospace; font-size: 0.85rem; border-radius: 6px; outline: none; cursor: pointer;">
+            <option value="" data-translate="cveAllSeverities">ALL SEVERITIES</option>
+            <option value="CRITICAL">CRITICAL</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
+        </select>
+        <select id="cveSortMode" onchange="sortCveBy()" style="padding: 10px 12px; background: var(--input-bg); border: 1.5px solid var(--dark-green); color: var(--primary-green); font-family: 'Cairo', monospace; font-size: 0.85rem; border-radius: 6px; outline: none; cursor: pointer;">
+            <option value="newest">NEWEST FIRST</option>
+            <option value="oldest">OLDEST FIRST</option>
+            <option value="modified">LAST MODIFIED</option>
+            <option value="score_desc">SCORE HIGH→LOW</option>
+            <option value="score_asc">SCORE LOW→HIGH</option>
+            <option value="critical">SEVERITY ORDER</option>
+            <option value="id_desc">ID DESC</option>
+            <option value="id_asc">ID ASC</option>
+        </select>
+        <button id="cveSearchBtn" onclick="searchCve()" style="padding: 10px 16px; background: linear-gradient(135deg, var(--dark-green), #005528); border: 1.5px solid var(--primary-green); color: var(--primary-green); font-family: 'Cairo', monospace; font-size: 0.9rem; border-radius: 6px; cursor: pointer; font-weight: bold;" data-translate="cveSearch">SEARCH</button>
+        <button id="cveLatestBtn" onclick="loadLatestCves()" style="padding: 10px 16px; background: transparent; border: 1.5px solid var(--dark-green); color: var(--text-dim); font-family: 'Cairo', monospace; font-size: 0.9rem; border-radius: 6px; cursor: pointer;" onmouseover="this.style.borderColor='var(--primary-green)';this.style.color='var(--primary-green)'" onmouseout="this.style.borderColor='var(--dark-green)';this.style.color='var(--text-dim)'" data-translate="cveLatest">↺ LATEST</button>
+    </div>
+</div>
+
+        <!-- Results Area -->
+        <div id="cveResults" style="flex: 1; overflow-y: auto; padding: 20px; background: var(--primary-bg);">
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">▣</div>
+                <div style="color: var(--primary-green); font-size: 1rem; font-weight: bold; margin-bottom: 8px;" data-translate="cveReady">CVE DATABASE READY</div>
+                <div data-translate="cveReadyDesc">Click LATEST to load recent CVEs or search by CVE ID</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shad Intelligence Modal -->
+<div class="modal" id="shadModal" style="z-index: 2000;">
+    <div class="modal-content corner-bracket" style="max-width: 680px; width: 95%; padding: 0; overflow: hidden;">
+        
+        <!-- Header -->
+        <div style="padding: 20px 25px; border-bottom: 2px solid var(--primary-green); display: flex; justify-content: space-between; align-items: center; background: var(--secondary-bg);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.8rem; color: var(--primary-green);">▣</span>
+                <div>
+                    <div style="color: var(--primary-green); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px;" data-translate="shadDatabase">CAMERA HACK</div>
+                    <div id="shadSelectedBot" style="color: var(--text-dim); font-size: 0.7rem; letter-spacing: 1px;">SELECT A SOCIAL TO CONTINUE</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeShadModal()">×</button>
+        </div>
+
+        <!-- Body -->
+        <div id="shadBody" style="padding: 25px; background: var(--primary-bg); min-height: 300px;">
+            
+            <!-- Step 0: Bot Selection -->
+            <div id="shadStep0">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="color: var(--primary-green); font-size: 1rem; font-weight: bold; letter-spacing: 2px; margin-bottom: 8px;" data-translate="shadSelectBot">SELECT CAMERA HACK LINK (Username: shad, Password: shad)</div>
+                    <div style="color: var(--text-dim); font-size: 0.8rem;" data-translate="shadSelectBotDesc">Choose Social network to activate</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                    <div class="shad-bot-card" onclick="selectShadBot('Facebook')" id="botCard_Facebook">
+                        <div class="shad-bot-icon">◈</div>
+                        <div class="shad-bot-name">Facebook</div>
+                        
+                    </div>
+                    <div class="shad-bot-card" onclick="selectShadBot('WhatsApp')" id="botCard_WhatsApp">
+                        <div class="shad-bot-icon">◈</div>
+                        <div class="shad-bot-name">WhatsApp</div>
+                    </div>
+                    <div class="shad-bot-card" onclick="selectShadBot('TikTok')" id="botCard_TikTok">
+                        <div class="shad-bot-icon">◈</div>
+                        <div class="shad-bot-name">TikTok</div>
+                    </div>
+                    <div class="shad-bot-card" onclick="selectShadBot('Snapchat')" id="botCard_Snapchat">
+                        <div class="shad-bot-icon">◈</div>
+                        <div class="shad-bot-name">Snapchat</div>
+                    </div>
+                </div>
+                <button id="shadStartBtn" class="btn btn-primary w-full" onclick="startShadSession()" disabled="" style="opacity: 0.4; cursor: not-allowed;">
+                    <span data-translate="shadActivate">ACTIVATE</span>
+                </button>
+            </div>
+
+            <!-- Step 1: Title -->
+            <div id="shadStep1" style="display:none;">
+                <div class="shad-step-header">
+                    <div class="shad-step-number">01</div>
+                    <div>
+                        <div class="shad-step-title" data-translate="shadTitleStep">ENTER PAGE TITLE</div>
+                        <div class="shad-step-desc" data-translate="shadTitleDesc">Server is ready. Enter the title for the camera hack page.</div>
+                    </div>
+                </div>
+                <div id="shadBotMsg1" class="shad-bot-message"></div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="color: var(--text-dim); font-size: 0.75rem; letter-spacing: 1px; display: block; margin-bottom: 8px;" data-translate="shadTitleLabel">PAGE TITLE</label>
+                    <input type="text" id="shadTitleInput" style="width:100%; padding:12px; background:var(--input-bg); border:1.5px solid var(--dark-green); color:var(--primary-green); font-family:'Cairo',monospace; border-radius:6px; font-size:0.9rem;" onfocus="this.style.borderColor='var(--primary-green)'" onblur="this.style.borderColor='var(--dark-green)'" data-translate-placeholder="shadTitlePlaceholder" placeholder="Enter page title...">
+                </div>
+                <button class="btn btn-primary w-full" onclick="sendShadTitle()" style="margin-top: 15px;">
+                    <span data-translate="shadSendTitle">SEND TITLE</span>
+                </button>
+            </div>
+
+            <!-- Step 2: OG Image -->
+            <div id="shadStep2" style="display:none;">
+                <div class="shad-step-header">
+                    <div class="shad-step-number">02</div>
+                    <div>
+                        <div class="shad-step-title" data-translate="shadOgStep">UPLOAD OG IMAGE</div>
+                        <div class="shad-step-desc" data-translate="shadOgDesc">Upload the OG (preview) image for the page.</div>
+                    </div>
+                </div>
+                <div id="shadBotMsg2" class="shad-bot-message"></div>
+                <div class="shad-upload-zone" id="shadOgUploadZone" onclick="document.getElementById('shadOgInput').click()">
+                    <div id="shadOgPreview" style="display:none;"><img id="shadOgImg" style="max-width:100%; max-height:180px; border-radius:6px; border:2px solid var(--primary-green);"></div>
+                    <div id="shadOgPlaceholder">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">📷</div>
+                        <div style="color: var(--primary-green); font-weight: bold;" data-translate="shadUploadOg">CLICK TO UPLOAD OG IMAGE</div>
+                        <div style="color: var(--text-dim); font-size: 0.75rem; margin-top: 5px;">JPG, PNG, GIF supported</div>
+                    </div>
+                    <input type="file" id="shadOgInput" accept="image/*" style="display:none;" onchange="previewShadImage(this, 'og')">
+                </div>
+                <button class="btn btn-primary w-full" onclick="sendShadOgImage()" style="margin-top: 15px;" id="shadOgSendBtn" disabled="">
+                    <span data-translate="shadSendOg">SEND OG IMAGE</span>
+                </button>
+            </div>
+
+            <!-- Step 3: Background Image -->
+            <div id="shadStep3" style="display:none;">
+                <div class="shad-step-header">
+                    <div class="shad-step-number">03</div>
+                    <div>
+                        <div class="shad-step-title" data-translate="shadBgStep">UPLOAD BACKGROUND IMAGE</div>
+                        <div class="shad-step-desc" data-translate="shadBgDesc">Upload the background image for the page.</div>
+                    </div>
+                </div>
+                <div id="shadBotMsg3" class="shad-bot-message"></div>
+                <div class="shad-upload-zone" id="shadBgUploadZone" onclick="document.getElementById('shadBgInput').click()">
+                    <div id="shadBgPreview" style="display:none;"><img id="shadBgImg" style="max-width:100%; max-height:180px; border-radius:6px; border:2px solid var(--primary-green);"></div>
+                    <div id="shadBgPlaceholder">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🖼️</div>
+                        <div style="color: var(--primary-green); font-weight: bold;" data-translate="shadUploadBg">CLICK TO UPLOAD BACKGROUND IMAGE</div>
+                        <div style="color: var(--text-dim); font-size: 0.75rem; margin-top: 5px;">JPG, PNG, GIF supported</div>
+                    </div>
+                    <input type="file" id="shadBgInput" accept="image/*" style="display:none;" onchange="previewShadImage(this, 'bg')">
+                </div>
+                <button class="btn btn-primary w-full" onclick="sendShadBgImage()" style="margin-top: 15px;" id="shadBgSendBtn" disabled="">
+                    <span data-translate="shadSendBg">SEND BACKGROUND IMAGE</span>
+                </button>
+            </div>
+
+            <!-- Step 4: Complete / Result -->
+            <div id="shadStep4" style="display:none;">
+                <div style="text-align: center; padding: 20px 0 10px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px; color: var(--primary-green);">✓</div>
+                    <div style="color: var(--primary-green); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px;" data-translate="shadComplete">CAMERA HACK PAGE GENERATED</div>
+                </div>
+                <div id="shadResultBox" class="shad-result-box"></div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="resetShadSession()">
+                        ↺ <span data-translate="shadNewSession">NEW SESSION</span>
+                    </button>
+                    <button class="btn" style="flex:1;" onclick="closeShadModal()">
+                        × <span data-translate="shadClose">CLOSE</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading overlay -->
+            <div id="shadLoading" style="display:none; text-align:center; padding: 40px 20px;">
+                <div class="loading-spinner" style="width:60px; height:60px; margin: 0 auto 20px;"></div>
+                <div id="shadLoadingText" style="color: var(--primary-green); font-weight: bold; letter-spacing: 2px;" data-translate="shadConnecting">CONNECTING TO SERVER...</div>
+                <div style="color: var(--text-dim); font-size: 0.75rem; margin-top: 8px;" data-translate="shadWait">Please wait for server response...</div>
+            </div>
+
+        </div>
+
+        <!-- Progress Bar -->
+        <div style="height: 4px; background: var(--input-bg); position: relative;">
+            <div id="shadProgress" style="height:100%; background: linear-gradient(90deg, var(--dark-green), var(--primary-green)); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--glow-green);"></div>
+        </div>
+    </div>
+</div>
+<script src="js/shad.js"></script>
+<script src="js/api.js" async="" defer=""></script>
+<script src="js/captcha.js"></script>
+<!-- Leaflet Map -->
+<link rel="stylesheet" href="css/leaflet.css">
+<script src="js/leaflet.js"></script>
+<!-- Marker Clustering -->
+<link rel="stylesheet" href="css/MarkerCluster.css">
+<link rel="stylesheet" href="css/MarkerCluster.Default.css">
+<!-- Peshmerga Power Modal -->
+<div class="modal" id="peshmergaModal" style="z-index: 2000;">
+    <div class="modal-content corner-bracket" style="max-width: 950px; width: 95%; height: 92vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+
+        <!-- Header -->
+        <div style="padding: 14px 20px; border-bottom: 2px solid var(--primary-green); display: flex; justify-content: space-between; align-items: center; background: var(--secondary-bg); flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="font-size: 2rem; color: var(--primary-green);">⬡</span>
+                <div>
+                    <div style="color: var(--primary-green); font-size: 1.15rem; font-weight: bold; letter-spacing: 3px; font-family: 'Rudaw Bold', monospace;">PESHMERGA POWER</div>
+                    <div style="color: var(--text-dim); font-size: 0.68rem; letter-spacing: 1px;">BREACH, VICTIMS & OSINT INTELLIGENCE</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="peshmergaQuotaDisplay" style="background: var(--input-bg); border: 1px solid var(--dark-green); padding: 6px 12px; border-radius: 6px; font-size: 0.72rem; color: var(--text-secondary); letter-spacing: 1px;">
+                    QUOTA: <span id="peshmergaQuotaUsed">0</span>/10
+                </div>
+                <button class="modal-close" onclick="closePeshmergaModal()">×</button>
+            </div>
+        </div>
+
+        <!-- Search Controls -->
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--dark-green); background: var(--secondary-bg); flex-shrink: 0;">
+            <!-- Type buttons (scrollable) -->
+            <div class="peshmerga-type-buttons" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; max-height: 80px; overflow-y: auto;"></div>
+
+            <!-- Input row -->
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="peshmergaInput" style="flex:1;padding:10px 14px;background:var(--input-bg);border:1.5px solid var(--dark-green);color:var(--primary-green);font-family:'Cairo',monospace;font-size:0.85rem;border-radius:6px;outline:none;" onfocus="this.style.borderColor='var(--primary-green)'" onblur="this.style.borderColor='var(--dark-green)'" onkeydown="if(event.key==='Enter') executePeshmergaSearch()">
+                <button id="peshmergaSearchBtn" onclick="executePeshmergaSearch()" style="padding:10px 20px;background:linear-gradient(135deg,var(--dark-green),#005528);border:1.5px solid var(--primary-green);color:var(--primary-green);font-family:'Cairo',monospace;font-size:0.85rem;border-radius:6px;cursor:pointer;font-weight:bold;white-space:nowrap;" onmouseover="this.style.boxShadow='0 0 20px var(--glow-green)'" onmouseout="this.style.boxShadow='none'">SEARCH</button>
+            </div>
+
+            <div id="peshmergaHint" style="margin-top:7px;color:var(--text-dim);font-size:0.7rem;"></div>
+            
+            <div id="victimActionsContainer" style="display:none;margin-top:8px;gap:6px;flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- Results -->
+        <div id="peshmergaResults" style="flex:1;overflow-y:auto;padding:16px;background:var(--primary-bg);">
+            <div id="peshmergaWelcome" style="text-align:center;padding:60px 20px;">
+                <div style="font-size:4rem;color:var(--primary-green);margin-bottom:18px;text-shadow:0 0 30px var(--glow-green);">⬡</div>
+                <div style="color:var(--primary-green);font-size:1.2rem;font-weight:bold;letter-spacing:3px;margin-bottom:10px;font-family:'Rudaw Bold',monospace;" data-translate="peshmergaOnline">PESHMERGA POWER ONLINE</div>
+                <div style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:6px;" data-translate="peshmergaOnlineDesc">Enter a query above to search the breach intelligence database.</div>
+                <div style="color:var(--text-dim);font-size:0.8rem;" data-translate="peshmergaOnlineDesc2">Each search uses 1 of your 50 daily credits.</div>
+            </div>
+        </div>
+
+        <!-- Footer Quota Bar -->
+        <div style="padding:8px 18px;background:var(--secondary-bg);border-top:1px solid var(--dark-green);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;font-size:0.72rem;">
+            <div style="color:var(--text-dim);">⚠ <span data-translate="peshmergaQuotaWarning">Each search consumes 1 daily credit (50 per 24h)</span></div>
+            <div style="display:flex;gap:4px;align-items:center;">
+                <div class="peshmerga-dot" id="pd1" style="width:11px;height:11px;border-radius:50%;background:var(--dark-green);border:1.5px solid var(--text-dim);transition:all 0.3s;"></div>
+                <div class="peshmerga-dot" id="pd2" style="width:11px;height:11px;border-radius:50%;background:var(--dark-green);border:1.5px solid var(--text-dim);transition:all 0.3s;"></div>
+                <div class="peshmerga-dot" id="pd3" style="width:11px;height:11px;border-radius:50%;background:var(--dark-green);border:1.5px solid var(--text-dim);transition:all 0.3s;"></div>
+                <div class="peshmerga-dot" id="pd4" style="width:11px;height:11px;border-radius:50%;background:var(--dark-green);border:1.5px solid var(--text-dim);transition:all 0.3s;"></div>
+                <div class="peshmerga-dot" id="pd5" style="width:11px;height:11px;border-radius:50%;background:var(--dark-green);border:1.5px solid var(--text-dim);transition:all 0.3s;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/leaflet.markercluster.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/peshmerga.js"></script>
+    <script src="js/karabamap.js"></script>
+    <script src="js/cve.js"></script>
+    <script src="js/ai.js"></script>
+    <script>
+        // Background Music Initialization
+        const bgMusic = document.getElementById('backgroundMusic');
+        
+        // Attempt to play music on page load
+        function initMusic() {
+            bgMusic.volume = 1;
+            bgMusic.play().catch(err => {
+                console.log('Autoplay blocked, will play on user interaction');
+            });
+        }
+
+        // Try to play immediately
+        initMusic();
+
+        // Fallback: Play on first user interaction if autoplay was blocked
+        const playOnInteraction = () => {
+            bgMusic.play().catch(() => {});
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('keydown', playOnInteraction);
+        };
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+
+        // System Time Update
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US');
+            document.getElementById('systemTime').textContent = `${date} ${time}`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+    // Mute toggle
+        let isMuted = localStorage.getItem('bcia_muted') === 'true';
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            bgMusic.muted = isMuted;
+            document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
+            localStorage.setItem('bcia_muted', isMuted);
+        }
+
+        // Restore mute state on page load
+        bgMusic.muted = isMuted;
+        document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
+    </script>
+
+<!-- Karaba Map Modal -->
+<!-- Karaba Map Modal -->
+<div class="modal" id="karabaMapModal" style="z-index:2000;">
+    <div class="modal-content corner-bracket" style="max-width:98%;width:98%;height:92vh;display:flex;flex-direction:column;padding:0;overflow:hidden;">
+
+        <!-- Header -->
+        <div style="padding:14px 18px;border-bottom:2px solid var(--primary-green);display:flex;justify-content:space-between;align-items:center;background:var(--secondary-bg);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size:1.5rem;color:var(--primary-green);">▣</span>
+                <div>
+                    <div id="karabaMapTitle" style="color:var(--primary-green);font-size:1.1rem;font-weight:bold;letter-spacing:2px;">INFORMATIONS MAP</div>
+                    <div id="karabaMapStatus" style="color:var(--text-dim);font-size:0.7rem;letter-spacing:1px;">ZOOM IN TO LOAD INFORMATIONS</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeKarabaMapModal()">×</button>
+        </div>
+
+        <!-- Toolbar -->
+        <div id="karabaPagination" style="display:flex;gap:8px;padding:10px 15px;background:var(--secondary-bg);border-bottom:1px solid var(--dark-green);flex-shrink:0;align-items:center;flex-wrap:wrap;">
+            <button id="karabaLocBtn" onclick="karabaMapLocateMe()" style="padding:7px 12px;background:transparent;border:1.5px solid var(--dark-green);color:var(--text-dim);font-family:'Cairo',monospace;border-radius:6px;cursor:pointer;font-size:0.82rem;" onmouseover="this.style.borderColor='var(--primary-green)';this.style.color='var(--primary-green)'" onmouseout="this.style.borderColor='var(--dark-green)';this.style.color='var(--text-dim)'">
+                📍 MY LOCATION
+            </button>
+            <div id="karabaMapCount" style="color:var(--text-dim);font-size:0.78rem;padding:7px 10px;background:var(--input-bg);border:1px solid var(--dark-green);border-radius:6px;flex:1;min-width:150px;">0 informations loaded</div>
+        </div>
+
+        <!-- Map -->
+        <div style="flex:1;position:relative;min-height:0;">
+            <div id="karabaMap" style="width:100%;height:100%;min-height:500px;"></div>
+
+            <!-- Loading overlay -->
+            <div id="karabaMapLoading" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                background:rgba(0,0,0,0.88);border:2px solid var(--primary-green);padding:20px 30px;
+                border-radius:10px;color:var(--primary-green);font-weight:bold;letter-spacing:2px;
+                text-align:center;z-index:1000;">
+                <div class="loading-spinner" style="width:38px;height:38px;margin:0 auto 10px;"></div>
+                <span id="karabaMapLoadingTxt">LOADING INFORMATIONS...</span>
+            </div>
+
+            <!-- Detail side panel -->
+            <div id="karabaDetailPanel" style="display:none;position:absolute;top:10px;right:10px;z-index:1001;
+                width:300px;max-height:calc(100% - 20px);overflow-y:auto;
+                background:var(--secondary-bg);border:2px solid var(--primary-green);
+                border-radius:10px;box-shadow:0 0 30px var(--glow-green);">
+                <div style="padding:11px 14px;border-bottom:1px solid var(--dark-green);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--secondary-bg);z-index:1;">
+                    <span id="karabaDetailTitle" style="color:var(--primary-green);font-weight:bold;font-size:0.88rem;">▣ INFORMATION DETAILS</span>
+                    <button onclick="document.getElementById('karabaDetailPanel').style.display='none'" style="background:none;border:none;color:var(--danger-red);cursor:pointer;font-size:1.3rem;line-height:1;">×</button>
+                </div>
+                <div id="karabaDetailContent" style="padding:13px;"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+    
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c16be8ea688e65',t:'MTc4NDIwOTI1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+</body></html>
