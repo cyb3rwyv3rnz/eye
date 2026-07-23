@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+    <title>PESHMERGA EYE SYSTEM</title>
+ 
+    <style>
+        @font-face {
+            font-family: 'RudawBold';
+            src: url('rabar.ttf') format('truetype');
+        }
+ 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+ 
+        body {
+            font-family: 'RudawBold', sans-serif;
+            background: radial-gradient(circle at center, #111 0%, #050505 45%, #000 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            position: fixed;
+            inset: 0;
+        }
+ 
+        /* background without side movement */
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .03), transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .02), transparent 25%);
+        }
+ 
+        /* wrapper */
+        .scene {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+ 
+        /* STATIC panel */
+        .panel {
+            width: min(100%, 900px);
+            height: auto;
+            max-height: calc(100dvh - 20px);
+            overflow: hidden;
+            padding: clamp(14px, 3vw, 32px);
+            border-radius: 26px;
+            background: linear-gradient(145deg, #111, #080808);
+            border: 1px solid rgba(255, 255, 255, .06);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .85);
+            position: relative;
+        }
+ 
+        /* scanner only vertical */
+        .scan {
+            position: absolute;
+            inset: 0;
+            border-radius: 26px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+ 
+        .scan::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, .03), transparent);
+            animation: scanner 4s linear infinite;
+        }
+ 
+        @keyframes scanner {
+            from {
+                top: -40%;
+            }
+ 
+            to {
+                top: 120%;
+            }
+        }
+ 
+        .logo-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+ 
+        .logo {
+            width: clamp(85px, 22vw, 210px);
+            height: auto;
+            max-width: 50%;
+        }
+ 
+        h1 {
+            text-align: center;
+            font-size: clamp(18px, 4vw, 34px);
+            margin-bottom: 8px;
+        }
+ 
+        .sub {
+            text-align: center;
+            color: #bcbcbc;
+            font-size: clamp(11px, 2vw, 14px);
+            margin-bottom: 14px;
+        }
+ 
+        .textbox {
+            min-height: clamp(140px, 28vh, 240px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            font-size: clamp(14px, 3.2vw, 22px);
+            line-height: 1.9;
+        }
+ 
+        .line {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: .8s ease;
+        }
+ 
+        .line.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+ 
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: #1b1b1b;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+ 
+        .bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #555, #ddd, #555);
+            animation: load 33s linear forwards;
+        }
+ 
+        @keyframes load {
+            from {
+                width: 0%;
+            }
+ 
+            to {
+                width: 100%;
+            }
+        }
+ 
+        .footer {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(12px, 2vw, 14px);
+            color: #aaa;
+        }
+ 
+        /* mobile fit */
+        @media (max-width:600px) {
+            .panel {
+                max-height: 100dvh;
+                border-radius: 20px;
+                padding: 14px;
+            }
+ 
+            .textbox {
+                min-height: 120px;
+            }
+        }
+    </style>
+</head>
+ 
+<body>
+ 
+    <div class="scene">
+        <div class="panel">
+ 
+            <div class="scan"></div>
+ 
+            <div class="logo-wrap">
+                <img src="welcome.png" class="logo">
+            </div>
+ 
+            <h1>ئاژانسی بی سی ئای ئەی - سێکشنی هەواڵگری</h1>
+            <div class="sub">سیستەمی هەواڵگری چاوی دەوڵەت</div>
+ 
+            <div class="textbox">
+                <div id="line" class="line"></div>
+            </div>
+ 
+            <div class="progress">
+                <div class="bar"></div>
+            </div>
+ 
+            <div class="footer">
+                <div>ڕێنمای</div>
+                <div id="count">30s</div>
+            </div>
+ 
+        </div>
+    </div>
+ 
+    <audio autoplay>
+        <source src="media/welcome.mp3" type="audio/mpeg">
+    </audio>
+ 
+    <script>
+        const texts = [
+            "چوونەژوورەوەت بۆ سیستەمی چاوی پێشمەرگە سەرکەوتوو بوو",
+            "کارمەندی بەڕێز، بەکارهێنانی سیستەم تەنها بە مەبەستی خزمەتکردنی کۆمەڵگە و نیشتمانە",
+            "هەروەها سیستەم لەلایەن ستافی تایبەتەوە چاودێری ئەکرێت",
+            "لە ئەگەری هەستکردن بە هەر هەڵسوکەوتێکی نایاسایی یاخود بەکارهێنانەوەی داتاکان بە مەبەستی خراپە",
+            "ئەوە ڕێکاری پێویست ئەگرینە بەر و هەروەها بۆ هەمیشە مافی بەکارهێنانی سیستەمت لێ وەرئەگیرێتەوە",
+            "سوپاس بۆ گوێگرتنت، ئامادەبن بۆ گواستنەوە بۆ بەشی سەرەکی"
+        ];
+ 
+        const line = document.getElementById("line");
+        let i = 0;
+ 
+        function showText() {
+            if (i >= texts.length) return;
+ 
+            line.classList.remove("show");
+ 
+            setTimeout(() => {
+                line.innerText = texts[i];
+                line.classList.add("show");
+                i++;
+            }, 300);
+        }
+ 
+        showText();
+        setInterval(showText, 5000);
+ 
+        let sec = 30;
+        const count = document.getElementById("count");
+ 
+        const timer = setInterval(() => {
+            sec--;
+            count.innerText = sec + "s";
+ 
+            if (sec <= 0) {
+                clearInterval(timer);
+ 
+                line.classList.remove("show");
+ 
+                setTimeout(() => {
+                    line.innerText = "گواستنەوە لە ٣ چرکەی داهاتوو...";
+                    line.classList.add("show");
+                }, 300);
+ 
+                setTimeout(() => {
+                    document.body.style.opacity = "0";
+                    document.body.style.transition = "1.2s";
+                }, 2000);
+ 
+                setTimeout(() => {
+                    location.href = "dashboard.html";
+                }, 3000);
+            }
+        }, 1000);
+    </script>
+ 
+</body>
+ 
+</html>
